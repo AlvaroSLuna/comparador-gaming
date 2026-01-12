@@ -24,19 +24,40 @@ foreach ($prices as $item) {
     }
 
     if ($newPrice) {
-        $update = $pdo->prepare("
-            UPDATE prices
-            SET price = :price
-            WHERE id = :id
-        ");
+        // Guardar histórico antes de actualizar
+        $history = $pdo->prepare("
+        INSERT INTO price_history (product_id, store_id, price)
+        SELECT product_id, store_id, price
+        FROM prices
+        WHERE id = :id
+    ");
+        $history->execute(['id' => $item['id']]);
 
+        // Actualizar precio
+        $update = $pdo->prepare("
+        UPDATE prices
+        SET price = :price
+        WHERE id = :id
+    ");
         $update->execute([
             'price' => $newPrice,
             'id' => $item['id']
         ]);
 
         echo "✔ Nuevo precio: $newPrice €\n";
-    } else {
-        echo "✖ No se pudo obtener precio\n";
+
+        $alerts = $pdo->prepare("
+    SELECT pa.id, u.email
+    FROM price_alerts pa
+    JOIN users u ON pa.user_id = u.id
+    WHERE pa.product_id = :product
+      AND pa.active = 1
+      AND :price <= pa.target_price
+");
+
+        $alerts->execute([
+            'product' => $item['product_id'],
+            'price' => $newPrice
+        ]);
     }
 }

@@ -35,13 +35,14 @@ if ($query) {
     <?php foreach ($results as $product): ?>
         <div>
             <a href="product.php?id=<?= $product['id'] ?>">
-    <?= htmlspecialchars($product['name']) ?>
-</a>
+                <?= htmlspecialchars($product['name']) ?>
+            </a>
             <?php if (isLoggedIn()): ?>
-                <form method="POST" action="add_wishlist.php" style="display:inline">
+                <form method="POST" action="add_wishlist.php">
                     <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-                    <button>❤️</button>
+                    <button type="submit">❤️</button>
                 </form>
+
             <?php endif; ?>
         </div>
     <?php endforeach; ?>

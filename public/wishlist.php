@@ -21,4 +21,10 @@ $items = Wishlist::getByUser($_SESSION['user_id']);
             <button>❌</button>
         </form>
     </div>
+    <form method="POST" action="add_alert.php">
+        <input type="hidden" name="product_id" value="<?= $item['id'] ?>">
+        <input type="number" step="0.01" name="target_price" placeholder="Precio deseado">
+        <button>🔔 Alertar</button>
+    </form>
+
 <?php endforeach; ?>
